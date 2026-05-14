@@ -34,7 +34,19 @@ const LoginPage: React.FC = () => {
       }
     } catch (err: any) {
       console.error('🔥 Login Error:', err);
-      setError(err.response?.data?.error || err.message || 'Failed to sign in');
+      
+      // Ensure error is a string to prevent React Minified Error #31
+      let errorMessage = 'Failed to sign in';
+      
+      if (err.response?.data?.error) {
+        errorMessage = typeof err.response.data.error === 'string' 
+          ? err.response.data.error 
+          : JSON.stringify(err.response.data.error);
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
