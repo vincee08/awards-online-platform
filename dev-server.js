@@ -246,14 +246,14 @@ app.get('/api/admin/stats', async (req, res) => {
     }
 
     const [awards, admins, pending, recent] = await Promise.all([
-      // Count ALL awards in the table
-      supabase.from('awards').select('*', { count: 'exact', head: true }),
+      // Count ONLY published awards for the dashboard total
+      supabase.from('awards').select('*', { count: 'exact', head: true }).eq('visibility_status', 'published'),
       // Count approved admins
       supabase.from('admin_users').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
       // Count pending requests
       supabase.from('admin_users').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-      // Get 5 latest awards (including hidden for admins)
-      supabase.from('awards').select('*').order('created_at', { ascending: false }).limit(5)
+      // Get 5 latest awards (ONLY published ones for the dashboard)
+      supabase.from('awards').select('*').eq('visibility_status', 'published').order('created_at', { ascending: false }).limit(5)
     ]);
 
     console.log('✅ Stats Sent:', {

@@ -60,8 +60,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 4. Fetch Stats in Parallel
     console.log('📊 Fetching Dashboard Stats...');
     const [awards, admins, pending, recent] = await Promise.all([
-      // Count ALL awards in the table
-      supabase.from('awards').select('*', { count: 'exact', head: true }),
+      // Count ONLY published awards for the dashboard total
+      supabase.from('awards').select('*', { count: 'exact', head: true }).eq('visibility_status', 'published'),
       
       // Count approved admins
       supabase.from('admin_users').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
@@ -69,9 +69,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       // Count pending requests
       supabase.from('admin_users').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
       
-      // Get 5 latest awards (including hidden/draft ones for admins)
+      // Get 5 latest awards (ONLY published ones for the dashboard)
       supabase.from('awards')
         .select('*')
+        .eq('visibility_status', 'published')
         .order('created_at', { ascending: false })
         .limit(5)
     ]);
