@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans text-gray-900 antialiased;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+  
+  .btn-primary {
+    @apply px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors font-medium;
+  }
+  
+  .btn-admin {
+    @apply px-4 py-2 bg-admin text-white rounded-lg hover:bg-admin-dark transition-colors font-medium;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all;
+  }
+
+  .admin-input-field {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-admin/50 transition-all;
+  }
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Elegant Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 100px;
+  border: 3px solid white;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Modal Specific Scrollbar */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* For Firefox */
+.modal-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* DNSC Logo Glow (Green) */
+.logo-dnsc-glow {
+  filter: none;
+  transform: scale(1);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.logo-dnsc-glow:hover {
+  filter: drop-shadow(0 0 15px rgba(34, 197, 94, 0.9));
+  transform: scale(1.05);
+}
+
+/* IC Logo Glow (Vibrant Pink/Magenta) */
+.logo-ic-glow {
+  filter: none;
+  transform: scale(1);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.logo-ic-glow:hover {
+  filter: drop-shadow(0 0 15px rgba(219, 39, 119, 0.95));
+  transform: scale(1.05);
+}
