@@ -24,14 +24,14 @@ export const awardsApi = {
 
 export const adminApi = {
   getProfile: () => api.get('/admin/profile'),
-  createAward: (data: any) => api.post('/awards', data),
-  updateAward: (id: string, data: any) => api.put(`/awards/${id}`, data),
-  archiveAward: (id: string) => api.patch(`/awards/${id}/archive`),
+  createAward: (data: any) => api.post('/admin/awards', data),
+  updateAward: (id: string, data: any) => api.put(`/admin/awards`, { id, ...data }),
+  archiveAward: (id: string) => api.patch('/admin/awards', { id, action: 'archive' }),
   getUsers: () => api.get('/admin/users'),
   updateUserStatus: (id: string, status: string) => api.patch(`/admin/users/${id}/status`, { status }),
   updateUserRole: (id: string, role: string) => api.patch(`/admin/users/${id}/role`, { role }),
   getStats: () => api.get('/admin/stats'),
-  getAwardById: (id: string) => api.get(`/awards/${id}`),
+  getAwardById: (id: string) => api.get('/admin/awards', { params: { id } }),
   uploadImage: (file: File) => {
     const formData = new FormData();
     formData.append('image', file);

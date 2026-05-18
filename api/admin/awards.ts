@@ -40,15 +40,53 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'GET') {
-      const { data, error } = await supabase.from('awards').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      return res.status(200).json(data);
+      const { id } = req.query;
+      
+      if (id) {
+        const { data, error } = await supabase.from('awards').select('*').eq('id', id).single();
+        if (error) throw error;
+        return res.status(200).json(data);
+      } else {
+        const { data, error } = await supabase.from('awards').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        return res.status(200).json(data);
+      }
     }
 
     if (req.method === 'POST') {
       const { data, error } = await supabase.from('awards').insert([{ ...req.body, created_by: decodedToken.uid }]).select();
       if (error) throw error;
       return res.status(201).json(data[0]);
+    }
+
+    if (req.method === 'PATCH') {
+      const { id, action } = req.body;
+      if (!id) return res.status(400).json({ error: 'Award ID is required' });
+
+      if (action === 'archive') {
+        const { data, error } = await supabase
+          .from('awards')
+          .update({ visibility_status: 'hidden' })
+          .eq('id', id)
+          .select();
+        
+        if (error) throw error;
+        return res.status(200).json(data[0]);
+      }
+    }
+
+    if (req.method === 'PUT') {
+      const { id, ...updateData } = req.body;
+      if (!id) return res.status(400).json({ error: 'Award ID is required' });
+
+      const { data, error } = await supabase
+        .from('awards')
+        .update(updateData)
+        .eq('id', id)
+        .select();
+
+      if (error) throw error;
+      return res.status(200).json(data[0]);
     }
 
     return res.status(405).json({ error: 'Method not allowed' });
