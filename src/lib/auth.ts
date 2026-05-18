@@ -2,7 +2,9 @@ import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
   GoogleAuthProvider, 
-  signInWithPopup, 
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
 } from 'firebase/auth';
@@ -22,8 +24,24 @@ export const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 export const signInWithGoogle = async () => {
-  const result = await signInWithPopup(auth, googleProvider);
-  return result.user;
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result;
+  } catch (error: any) {
+    if (
+      error.code === 'auth/popup-blocked' || 
+      error.code === 'auth/cancelled-popup-request' ||
+      error.message?.includes('Cross-Origin-Opener-Policy')
+    ) {
+      await signInWithRedirect(auth, googleProvider);
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const checkRedirectResult = async () => {
+  return await getRedirectResult(auth);
 };
 
 export const signOut = async () => {

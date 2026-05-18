@@ -12,7 +12,7 @@ import {
 import type { Database } from '../../types/supabase';
 import { useOutletContext } from 'react-router-dom';
 import { adminApi } from '../../lib/api';
-import Skeleton, { TableSkeleton } from '../../components/Skeleton';
+import { TableSkeleton } from '../../components/Skeleton';
 
 type AdminUser = Database['public']['Tables']['admin_users']['Row'];
 

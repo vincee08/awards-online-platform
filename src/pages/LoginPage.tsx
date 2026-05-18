@@ -1,53 +1,100 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Award, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Award, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithGoogle, signOut } from '../lib/auth';
+import { signInWithGoogle, checkRedirectResult, signOut, observeAuth } from '../lib/auth';
 import { adminApi } from '../lib/api';
-import { AnimatePresence } from 'framer-motion';
+
+const getFriendlyErrorMessage = (error: any) => {
+  const code = error?.code || '';
+  const message = error?.message?.toLowerCase() || '';
+
+  if (code === 'auth/popup-blocked') return 'Login popup was blocked by your browser. Please allow popups for this site.';
+  if (code === 'auth/popup-closed-by-user') return 'Login was cancelled.';
+  if (code === 'auth/unauthorized-domain') return 'This domain is not authorized for Google login. Check Firebase settings.';
+  if (code === 'auth/network-request-failed') return 'Network error. Please check your internet connection.';
+  
+  if (message.includes('disallowed_useragent') || code === 'auth/disallowed-useragent') {
+    return 'Google login is not supported inside this embedded browser. Please open this page in a regular browser like Chrome, Edge, or Safari.';
+  }
+
+  return error?.message || 'Failed to sign in. Please try again.';
+};
+
+const isInAppBrowser = () => {
+  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+  return /FBAN|FBAV|Instagram|TikTok|Line|Snapchat/i.test(ua);
+};
 
 const LoginPage: React.FC = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showPendingModal, setShowPendingModal] = useState(false);
+  const [inAppBrowser, setInAppBrowser] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (isInAppBrowser()) {
+      setInAppBrowser(true);
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    
+    const initAuth = async () => {
+      try {
+        await checkRedirectResult();
+      } catch (err: any) {
+        if (isMounted) {
+          setError(getFriendlyErrorMessage(err));
+          setLoading(false);
+        }
+      }
+
+      const unsubscribe = observeAuth(async (user) => {
+        if (user) {
+          if (isMounted) setLoading(true);
+          try {
+            const { data: profile } = await adminApi.getProfile();
+            if (isMounted) {
+              if (profile.role === 'super_admin' || (profile.role === 'admin' && profile.status === 'approved')) {
+                navigate('/admin');
+              } else {
+                setShowPendingModal(true);
+                setLoading(false);
+              }
+            }
+          } catch (err: any) {
+            if (isMounted) {
+              setError('Failed to fetch admin profile. You might not have access.');
+              await signOut();
+              setLoading(false);
+            }
+          }
+        } else {
+          if (isMounted) setLoading(false);
+        }
+      });
+      
+      return unsubscribe;
+    };
+
+    const unsubscribePromise = initAuth();
+
+    return () => {
+      isMounted = false;
+      unsubscribePromise.then(unsub => unsub && unsub());
+    };
+  }, [navigate]);
+
   const handleLogin = async () => {
-    console.log('🚀 Login Button Clicked');
     setLoading(true);
     setError(null);
     try {
-      console.log('🔑 Opening Firebase Google Popup...');
       await signInWithGoogle();
-      console.log('✅ Firebase Login Success');
-
-      console.log('📡 Fetching Admin Profile from Backend...');
-      const { data: profile } = await adminApi.getProfile();
-      console.log('✨ Profile Received:', profile);
-
-      if (profile.role === 'super_admin' || (profile.role === 'admin' && profile.status === 'approved')) {
-        console.log('🎟️ Admin Access Granted, redirecting...');
-        navigate('/admin');
-      } else {
-        console.log('⏳ Account Pending Approval');
-        setShowPendingModal(true);
-      }
     } catch (err: any) {
-      console.error('🔥 Login Error:', err);
-      
-      // Ensure error is a string to prevent React Minified Error #31
-      let errorMessage = 'Failed to sign in';
-      
-      if (err.response?.data?.error) {
-        errorMessage = typeof err.response.data.error === 'string' 
-          ? err.response.data.error 
-          : JSON.stringify(err.response.data.error);
-      } else if (err.message) {
-        errorMessage = err.message;
-      }
-      
-      setError(errorMessage);
-    } finally {
+      setError(getFriendlyErrorMessage(err));
       setLoading(false);
     }
   };
@@ -83,20 +130,30 @@ const LoginPage: React.FC = () => {
           </div>
         )}
 
-        <button
-          onClick={handleLogin}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-4 py-4 px-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-admin/20 hover:bg-admin/5 transition-all group disabled:opacity-50"
-        >
-          <img 
-            src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
-            alt="Google" 
-            className="w-6 h-6"
-          />
-          <span className="text-gray-700 font-bold text-lg">
-            {loading ? 'Signing in...' : 'Continue with Google'}
-          </span>
-        </button>
+        {inAppBrowser ? (
+          <div className="mb-6 p-6 bg-amber-50 rounded-2xl border border-amber-100 text-center space-y-3">
+            <AlertTriangle className="text-amber-500 mx-auto" size={32} />
+            <p className="text-amber-800 font-bold">Unsupported Browser Detected</p>
+            <p className="text-amber-700 text-sm font-medium">
+              Google login is not supported inside this in-app browser. Please open this page in Chrome, Edge, Safari, or another secure browser.
+            </p>
+          </div>
+        ) : (
+          <button
+            onClick={handleLogin}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-4 py-4 px-6 bg-white border-2 border-gray-100 rounded-2xl hover:border-admin/20 hover:bg-admin/5 transition-all group disabled:opacity-50"
+          >
+            <img 
+              src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" 
+              alt="Google" 
+              className="w-6 h-6"
+            />
+            <span className="text-gray-700 font-bold text-lg">
+              {loading ? 'Processing...' : 'Continue with Google'}
+            </span>
+          </button>
+        )}
 
         <div className="mt-10 pt-8 border-t border-gray-50 text-center">
           <p className="text-sm text-gray-400 font-medium">

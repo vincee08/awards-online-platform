@@ -17,7 +17,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
 import { Link } from 'react-router-dom';
-import Skeleton, { PurpleCardSkeleton } from '../components/Skeleton';
+import { PurpleCardSkeleton } from '../components/Skeleton';
 import { AlertCircle } from 'lucide-react';
 
 const AwardsPage: React.FC = () => {
@@ -76,7 +76,7 @@ const AwardsPage: React.FC = () => {
       if (error) throw error;
       setAwards(data || []);
       
-      const uniquePrograms = Array.from(new Set((data || []).map(a => a.program)));
+      const uniquePrograms = Array.from(new Set((data || []).map((a: any) => a.program)));
       setPrograms(['All', ...uniquePrograms]);
     } catch (err: any) {
       console.error('Error fetching awards:', err);
@@ -587,7 +587,7 @@ const AwardsPage: React.FC = () => {
                         className="absolute inset-0 w-full h-full border-none z-10 bg-white"
                         sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
                         onError={() => setPreviewError(true)}
-                        onLoad={(e) => {
+                        onLoad={() => {
                           // Note: Standard X-Frame-Options blocks don't trigger onError, 
                           // so we rely on domain detection + manual fallback if needed.
                         }}

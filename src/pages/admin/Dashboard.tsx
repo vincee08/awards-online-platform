@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } }
   };
 
   return (
@@ -117,7 +117,7 @@ const Dashboard: React.FC = () => {
         animate="visible"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
       >
-        {cards.map((card, i) => (
+        {cards.map((card) => (
           <motion.div
             key={card.label}
             variants={itemVariants}

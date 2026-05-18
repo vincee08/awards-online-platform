@@ -6,7 +6,6 @@ import {
   Trash2, 
   Eye, 
   Filter,
-  Image as ImageIcon,
   Users,
   GraduationCap,
   Award
@@ -17,7 +16,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import { adminApi } from '../../lib/api';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
-import Skeleton, { TableSkeleton } from '../../components/Skeleton';
+import { TableSkeleton } from '../../components/Skeleton';
 
 type Award = Database['public']['Tables']['awards']['Row'];
 type AdminProfile = Database['public']['Tables']['admin_users']['Row'];

@@ -57,7 +57,7 @@ export interface Database {
           post_link: string | null
           image_url: string | null
           uploaded_image_path: string | null
-          visibility_status: 'published' | 'draft'
+          visibility_status: 'published' | 'draft' | 'hidden'
           created_by: string | null
           created_at: string
           updated_at: string
@@ -74,7 +74,7 @@ export interface Database {
           post_link?: string | null
           image_url?: string | null
           uploaded_image_path?: string | null
-          visibility_status?: 'published' | 'draft'
+          visibility_status?: 'published' | 'draft' | 'hidden'
           created_by?: string | null
           created_at?: string
           updated_at?: string
@@ -91,7 +91,7 @@ export interface Database {
           post_link?: string | null
           image_url?: string | null
           uploaded_image_path?: string | null
-          visibility_status?: 'published' | 'draft'
+          visibility_status?: 'published' | 'draft' | 'hidden'
           created_by?: string | null
           created_at?: string
           updated_at?: string
