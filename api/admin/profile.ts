@@ -72,7 +72,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json(profile);
   } catch (error: any) {
     console.error('🔥 Unexpected API Error:', error);
-    return res.status(500).json({ error: 'An internal server error occurred' });
+    // Return the actual error message to help debug Vercel issues
+    return res.status(500).json({ error: error.message || 'An internal server error occurred' });
   }
 }
 

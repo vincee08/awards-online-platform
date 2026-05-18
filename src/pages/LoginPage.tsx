@@ -67,7 +67,8 @@ const LoginPage: React.FC = () => {
             }
           } catch (err: any) {
             if (isMounted) {
-              setError('Failed to fetch admin profile. You might not have access.');
+              const errorMessage = err.response?.data?.error || err.message || 'Failed to fetch admin profile.';
+              setError(`Backend Error: ${errorMessage}. Please check Vercel environment variables.`);
               await signOut();
               setLoading(false);
             }
