@@ -3,6 +3,7 @@
   "include": ["**/*.ts"],
   "compilerOptions": {
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": ["node"],
+    "allowSyntheticDefaultImports": true
   }
 }

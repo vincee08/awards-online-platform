@@ -1,4 +1,4 @@
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import admin from 'firebase-admin';
 import { createClient } from '@supabase/supabase-js';
 
@@ -59,15 +59,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 4. Fetch Stats in Parallel
     console.log('📊 Fetching Dashboard Stats...');
-    const [awards, admins, pending, recent] = await Promise.all([
+    const [awardsRes, adminsRes, pendingRes, recentRes] = await Promise.all([
       // Count ONLY published awards for the dashboard total
-      supabase.from('awards').select('*', { count: 'exact', head: true }).eq('visibility_status', 'published'),
+      supabase.from('awards').select('id', { count: 'exact' }).eq('visibility_status', 'published'),
       
       // Count approved admins
-      supabase.from('admin_users').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+      supabase.from('admin_users').select('id', { count: 'exact' }).eq('status', 'approved'),
       
       // Count pending requests
-      supabase.from('admin_users').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('admin_users').select('id', { count: 'exact' }).eq('status', 'pending'),
       
       // Get 5 latest awards (ONLY published ones for the dashboard)
       supabase.from('awards')
@@ -77,19 +77,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         .limit(5)
     ]);
 
-    // Log the results for debugging
-    console.log('✨ Stats Fetched:', {
-      totalAwards: awards.count,
-      activeAdmins: admins.count,
-      pendingAdmins: pending.count,
-      recentCount: recent.data?.length
-    });
+    // Check for query errors explicitly so they aren't silently swallowed
+    if (awardsRes.error) console.error('Awards Query Error:', awardsRes.error);
+    if (adminsRes.error) console.error('Admins Query Error:', adminsRes.error);
+    if (pendingRes.error) console.error('Pending Query Error:', pendingRes.error);
+    if (recentRes.error) console.error('Recent Query Error:', recentRes.error);
 
     return res.status(200).json({
-      totalAwards: awards.count || 0,
-      approvedAdmins: admins.count || 0,
-      pendingRequests: pending.count || 0,
-      recentAwards: recent.data || []
+      totalAwards: awardsRes.count || 0,
+      approvedAdmins: adminsRes.count || 0,
+      pendingRequests: pendingRes.count || 0,
+      recentAwards: recentRes.data || []
     });
 
   } catch (error: any) {
