@@ -20,6 +20,14 @@ const AdminUsers: React.FC = () => {
   const { profile } = useOutletContext<{ profile: AdminUser }>();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState<string | null>(null);
+
+  const getInitials = (name: string | null) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name[0].toUpperCase();
+  };
 
   useEffect(() => {
     fetchUsers();
@@ -45,10 +53,14 @@ const AdminUsers: React.FC = () => {
     }
 
     try {
+      setProcessingId(userId);
       const { data } = await adminApi.updateUserStatus(userId, status);
       setUsers(users.map(u => u.id === userId ? { ...u, status: data.status } : u));
+      alert(`User successfully ${status}!`);
     } catch (error: any) {
       alert(error.response?.data?.error || error.message);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -59,10 +71,14 @@ const AdminUsers: React.FC = () => {
     }
 
     try {
+      setProcessingId(userId);
       const { data } = await adminApi.updateUserRole(userId, role);
       setUsers(users.map(u => u.id === userId ? { ...u, role: data.role } : u));
+      alert(`User role successfully updated to ${role.replace('_', ' ')}!`);
     } catch (error: any) {
       alert(error.response?.data?.error || error.message);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -108,7 +124,13 @@ const AdminUsers: React.FC = () => {
                   >
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <img src={user.avatar_url || ''} className="w-10 h-10 rounded-full bg-gray-100 object-cover border border-slate-100" alt="" />
+                        {user.avatar_url ? (
+                          <img src={user.avatar_url} className="w-10 h-10 rounded-full bg-gray-100 object-cover border border-slate-100" alt="" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-admin/10 text-admin flex items-center justify-center font-bold border border-admin/20">
+                            {getInitials(user.full_name)}
+                          </div>
+                        )}
                         <div>
                           <div className="flex items-center gap-2">
                             <p className="font-bold text-gray-900">{user.full_name}</p>
@@ -164,12 +186,12 @@ const AdminUsers: React.FC = () => {
                         {user.status !== 'approved' && (
                           <button 
                             onClick={() => profile?.role === 'super_admin' && updateStatus(user.id, 'approved')}
-                            disabled={profile?.role !== 'super_admin'}
+                            disabled={profile?.role !== 'super_admin' || processingId === user.id}
                             className={`p-2 text-emerald-500 rounded-lg transition-all ${
                               profile?.role === 'super_admin' 
                                 ? 'hover:bg-emerald-50' 
                                 : 'opacity-20 cursor-not-allowed'
-                            }`}
+                            } ${processingId === user.id ? 'opacity-50 animate-pulse' : ''}`}
                             title={profile?.role === 'super_admin' ? "Approve" : "Action restricted to Super Admins"}
                           >
                             <CheckCircle2 size={20} />
@@ -178,12 +200,12 @@ const AdminUsers: React.FC = () => {
                         {user.status !== 'rejected' && user.status !== 'approved' && (
                           <button 
                             onClick={() => profile?.role === 'super_admin' && updateStatus(user.id, 'rejected')}
-                            disabled={profile?.role !== 'super_admin'}
+                            disabled={profile?.role !== 'super_admin' || processingId === user.id}
                             className={`p-2 text-red-500 rounded-lg transition-all ${
                               profile?.role === 'super_admin' 
                                 ? 'hover:bg-red-50' 
                                 : 'opacity-20 cursor-not-allowed grayscale'
-                            }`}
+                            } ${processingId === user.id ? 'opacity-50 animate-pulse' : ''}`}
                             title={profile?.role === 'super_admin' ? "Reject" : "Action restricted to Super Admins"}
                           >
                             <XCircle size={20} />
@@ -192,12 +214,12 @@ const AdminUsers: React.FC = () => {
                         {user.status === 'approved' && (
                           <button 
                             onClick={() => profile?.role === 'super_admin' && updateStatus(user.id, 'disabled')}
-                            disabled={profile?.role !== 'super_admin' || user.id === profile.id}
+                            disabled={profile?.role !== 'super_admin' || user.id === profile.id || processingId === user.id}
                             className={`p-2 text-gray-400 rounded-lg transition-all ${
                               profile?.role === 'super_admin' && user.id !== profile.id
                                 ? 'hover:text-gray-900 hover:bg-gray-100' 
                                 : 'opacity-20 cursor-not-allowed grayscale'
-                            }`}
+                            } ${processingId === user.id ? 'opacity-50 animate-pulse' : ''}`}
                             title={profile?.role === 'super_admin' ? "Disable Account" : "Action restricted to Super Admins"}
                           >
                             <UserX size={20} />

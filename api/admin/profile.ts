@@ -68,6 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         auth_user_id: firebaseUid,
         full_name: decodedToken.name || decodedToken.email?.split('@')[0] || 'Unknown',
         email: decodedToken.email || '',
+        avatar_url: decodedToken.picture || null,
         role: 'admin',
         status: 'pending',
         created_at: new Date().toISOString()
