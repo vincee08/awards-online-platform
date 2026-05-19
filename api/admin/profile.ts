@@ -63,7 +63,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (!profile) {
-      return res.status(404).json({ error: 'Admin profile not found. Please contact a super admin.' });
+      // Auto-create a pending admin user profile
+      const newAdmin = {
+        auth_user_id: firebaseUid,
+        full_name: decodedToken.name || decodedToken.email?.split('@')[0] || 'Unknown',
+        email: decodedToken.email || '',
+        role: 'admin',
+        status: 'pending',
+        created_at: new Date().toISOString()
+      };
+
+      const { data: createdProfile, error: insertError } = await supabaseClient
+        .from('admin_users')
+        .insert([newAdmin])
+        .select()
+        .single();
+
+      if (insertError) {
+        throw new Error(`Failed to create admin profile: ${insertError.message}`);
+      }
+
+      return res.status(200).json(createdProfile);
     }
 
     return res.status(200).json(profile);
