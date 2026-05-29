@@ -119,8 +119,8 @@ const LoginPage: React.FC = () => {
         className="max-w-md w-full bg-white rounded-3xl p-10 shadow-2xl shadow-admin/10 border border-gray-100"
       >
         <div className="text-center mb-10">
-          <div className="inline-flex p-4 bg-admin/10 rounded-2xl text-admin mb-6">
-            <Award size={40} />
+          <div className="inline-flex mb-6">
+            <img src="/logo/awardsSystem-logo.png" alt="Institute Awards Logo" className="h-16 w-auto object-contain" />
           </div>
           <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Admin Login</h1>
           <p className="text-gray-500">

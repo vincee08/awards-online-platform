@@ -93,9 +93,7 @@ const AdminLayout: React.FC = () => {
       `}>
         <div className="h-full flex flex-col">
           <div className="p-8 flex items-center gap-3">
-            <div className="p-2 bg-admin rounded-xl">
-              <Award size={24} />
-            </div>
+            <img src="/logo/awardsSystem-logo.png" alt="Admin Logo" className="h-8 w-auto object-contain shrink-0" />
             <span className="text-xl font-bold tracking-tight">Admin Console</span>
           </div>
 
