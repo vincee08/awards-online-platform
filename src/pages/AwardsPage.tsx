@@ -142,9 +142,7 @@ const AwardsPage: React.FC = () => {
         <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
           <Link to="/" className="flex items-center gap-2 md:gap-4 overflow-hidden hover:opacity-90 transition-opacity">
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
-              <div className="p-1.5 md:p-2 bg-primary rounded-xl text-white shadow-lg shadow-primary/20 shrink-0">
-                <Award size={18} className="md:w-6 md:h-6" />
-              </div>
+              <img src="/logo/awardsSystem-logo.png" alt="Institute Awards" className="h-10 w-auto md:h-12 object-contain shrink-0" />
               <div className="truncate">
                 <span className="font-black text-white text-base md:text-xl tracking-tighter block leading-none truncate">Institute Awards</span>
                 <span className="text-[8px] md:text-[10px] font-black text-purple-300 uppercase tracking-[0.1em] md:tracking-[0.2em] block mt-1">Online Platform</span>
@@ -619,17 +617,11 @@ const AwardsPage: React.FC = () => {
                     alt="IC Logo" 
                     className="h-10 w-auto rounded-lg object-contain logo-ic-glow"
                   />
-                  {/* Show Award icon here only on small screens */}
-                  <div className="md:hidden p-2 bg-white/10 rounded-xl text-white border border-white/20">
-                    <Award size={20} />
-                  </div>
+                  <img src="/logo/awardsSystem-logo.png" alt="Institute Awards Logo" className="h-10 w-auto object-contain md:hidden" />
                 </div>
                 
                 <div className="flex items-center gap-3">
-                  {/* Show Award icon here only on medium+ screens */}
-                  <div className="hidden md:block p-2 bg-white/10 rounded-xl text-white border border-white/20">
-                    <Award size={20} />
-                  </div>
+                  <img src="/logo/awardsSystem-logo.png" alt="Institute Awards Logo" className="h-10 w-auto object-contain hidden md:block" />
                   <div className="text-center md:text-left">
                     <span className="font-black text-white text-2xl md:text-3xl tracking-tighter block leading-none">Institute Awards</span>
                     <span className="text-[10px] md:text-xs font-black text-purple-300 uppercase tracking-[0.3em] block mt-2">Online Platform</span>

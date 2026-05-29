@@ -46,9 +46,9 @@ const LoadingScreen: React.FC = () => {
               repeat: Infinity, 
               ease: "easeInOut" 
             }}
-            className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/20 relative z-10"
+            className="flex items-center justify-center relative z-10"
           >
-            <Award className="text-primary w-12 h-12" />
+            <img src="/logo/awardsSystem-logo.png" alt="Institute Awards Logo" className="h-24 w-auto object-contain" />
           </motion.div>
           <div className="absolute inset-0 bg-primary/30 blur-[40px] -z-10 rounded-full animate-pulse" />
         </div>
