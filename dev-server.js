@@ -101,7 +101,7 @@ app.get('/api/admin/profile', async (req, res) => {
   }
 });
 
-app.post('/api/awards', async (req, res) => {
+app.post('/api/admin/awards', async (req, res) => {
   console.log('📝 Creating New Award...');
   const authHeader = req.headers.authorization;
   const idToken = authHeader?.split('Bearer ')[1];
@@ -146,8 +146,9 @@ app.post('/api/awards', async (req, res) => {
   }
 });
 
-app.put('/api/awards/:id', async (req, res) => {
-  console.log(`📝 Updating Award: ${req.params.id}`);
+app.put('/api/admin/awards', async (req, res) => {
+  const { id } = req.body;
+  console.log(`📝 Updating Award: ${id}`);
   const authHeader = req.headers.authorization;
   const idToken = authHeader?.split('Bearer ')[1];
   
@@ -167,13 +168,15 @@ app.put('/api/awards/:id', async (req, res) => {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
+    const { id: _, ...updateData } = req.body;
+
     const { data, error } = await supabase
       .from('awards')
       .update({
-        ...req.body,
+        ...updateData,
         updated_at: new Date().toISOString()
       })
-      .eq('id', req.params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -187,8 +190,11 @@ app.put('/api/awards/:id', async (req, res) => {
   }
 });
 
-app.patch('/api/awards/:id/archive', async (req, res) => {
-  console.log(`📦 Archiving Award: ${req.params.id}`);
+app.patch('/api/admin/awards', async (req, res) => {
+  const { id, action } = req.body;
+  if (action !== 'archive') return res.status(400).json({ error: 'Invalid action' });
+
+  console.log(`📦 Archiving Award: ${id}`);
   const authHeader = req.headers.authorization;
   const idToken = authHeader?.split('Bearer ')[1];
   
@@ -211,7 +217,7 @@ app.patch('/api/awards/:id/archive', async (req, res) => {
     const { error } = await supabase
       .from('awards')
       .update({ visibility_status: 'hidden' })
-      .eq('id', req.params.id);
+      .eq('id', id);
 
     if (error) throw error;
     
@@ -388,13 +394,14 @@ app.patch('/api/admin/users/:id/role', async (req, res) => {
 });
 
 // Award Details
-app.get('/api/awards/:id', async (req, res) => {
-  console.log(`🔍 Fetching Award Details: ${req.params.id}`);
+app.get('/api/admin/awards', async (req, res) => {
+  const { id } = req.query;
+  console.log(`🔍 Fetching Award Details: ${id}`);
   try {
     const { data, error } = await supabase
       .from('awards')
       .select('*')
-      .eq('id', req.params.id)
+      .eq('id', id)
       .single();
     if (error) throw error;
     res.status(200).json(data);
