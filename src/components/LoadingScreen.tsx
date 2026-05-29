@@ -55,9 +55,9 @@ const LoadingScreen: React.FC = () => {
 
         <div className="text-center w-full space-y-10">
           <div className="space-y-3">
-            <h2 className="text-white font-black text-2xl md:text-3xl tracking-tighter">Institute of Computing</h2>
+            <h2 className="text-white font-black text-2xl md:text-3xl tracking-tighter">Institute Awards</h2>
             <p className="text-purple-300 text-[10px] font-black uppercase tracking-[0.5em] opacity-80">
-              Awards Online Platform
+              Online Platform
             </p>
           </div>
 

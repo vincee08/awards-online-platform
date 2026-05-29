@@ -1,4 +1,4 @@
-# Awards Submission and Recognition System
+# Institute Awards Online Platform
 
 A modern, full-stack recognition portal built with React, TypeScript, and Supabase.
 

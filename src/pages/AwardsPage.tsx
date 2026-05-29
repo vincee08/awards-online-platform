@@ -146,8 +146,8 @@ const AwardsPage: React.FC = () => {
                 <Award size={18} className="md:w-6 md:h-6" />
               </div>
               <div className="truncate">
-                <span className="font-black text-white text-base md:text-xl tracking-tighter block leading-none truncate">Institute of Computing</span>
-                <span className="text-[8px] md:text-[10px] font-black text-purple-300 uppercase tracking-[0.1em] md:tracking-[0.2em] block mt-1">Awards Online Platform</span>
+                <span className="font-black text-white text-base md:text-xl tracking-tighter block leading-none truncate">Institute Awards</span>
+                <span className="text-[8px] md:text-[10px] font-black text-purple-300 uppercase tracking-[0.1em] md:tracking-[0.2em] block mt-1">Online Platform</span>
               </div>
             </div>
           </Link>
@@ -168,7 +168,7 @@ const AwardsPage: React.FC = () => {
           Browse Achievements
         </h1>
         <p className="text-purple-200 font-medium max-w-2xl mx-auto">
-          Explore the collective excellence of the DNSC Institute of Computing community.
+          Explore the collective excellence of the DNSC Institute Awards community.
         </p>
       </header>
 
@@ -631,8 +631,8 @@ const AwardsPage: React.FC = () => {
                     <Award size={20} />
                   </div>
                   <div className="text-center md:text-left">
-                    <span className="font-black text-white text-2xl md:text-3xl tracking-tighter block leading-none">Institute of Computing</span>
-                    <span className="text-[10px] md:text-xs font-black text-purple-300 uppercase tracking-[0.3em] block mt-2">Awards Online Platform</span>
+                    <span className="font-black text-white text-2xl md:text-3xl tracking-tighter block leading-none">Institute Awards</span>
+                    <span className="text-[10px] md:text-xs font-black text-purple-300 uppercase tracking-[0.3em] block mt-2">Online Platform</span>
                   </div>
                 </div>
               </div>
@@ -643,7 +643,7 @@ const AwardsPage: React.FC = () => {
           </div>
           <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right">
             <p className="text-white text-xs md:text-sm font-black uppercase tracking-widest">
-              © {new Date().getFullYear()} Institute of Computing Awards Online Platform
+              © {new Date().getFullYear()} Institute Awards Online Platform
             </p>
             <p className="text-purple-300 text-xs font-medium">
               Designed for Higher Education Recognition

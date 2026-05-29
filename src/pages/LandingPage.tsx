@@ -35,8 +35,8 @@ const LandingPage: React.FC = () => {
               <Award size={18} className="md:w-6 md:h-6" />
             </div>
             <div className="truncate">
-              <span className="font-black text-white text-base md:text-xl tracking-tighter block leading-none truncate">Institute of Computing</span>
-              <span className="text-[8px] md:text-[10px] font-black text-purple-300 uppercase tracking-[0.1em] md:tracking-[0.2em] block mt-1">Awards Online Platform</span>
+              <span className="font-black text-white text-base md:text-xl tracking-tighter block leading-none truncate">Institute Awards</span>
+              <span className="text-[8px] md:text-[10px] font-black text-purple-300 uppercase tracking-[0.1em] md:tracking-[0.2em] block mt-1">Online Platform</span>
             </div>
           </div>
           
@@ -124,7 +124,7 @@ const LandingPage: React.FC = () => {
               transition={{ delay: 0.2 }}
               className="text-lg md:text-xl text-purple-100 font-medium max-w-2xl mx-auto lg:mx-0 leading-relaxed opacity-90"
             >
-              The official awards platform for the Institute of Computing at Davao del Norte State College, Panabo. Dedicated to documenting, celebrating, and sharing the remarkable successes of our academic community.
+              The official awards platform for the Institute Awards at Davao del Norte State College, Panabo. Dedicated to documenting, celebrating, and sharing the remarkable successes of our academic community.
             </motion.p>
 
             <motion.div 
@@ -183,7 +183,7 @@ const LandingPage: React.FC = () => {
             <div className="w-20 h-1.5 bg-primary mx-auto rounded-full" />
           </div>
           <p className="text-xl text-purple-100 font-medium leading-relaxed">
-            The Institute of Computing Awards Online Platform serves as a living archive for the Davao del Norte State College community. It is designed to preserve records of student achievements and institutional recognitions, making them easily accessible and shareable with the world.
+            The Institute Awards Online Platform serves as a living archive for the Davao del Norte State College community. It is designed to preserve records of student achievements and institutional recognitions, making them easily accessible and shareable with the world.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-8">
             <div className="p-8 rounded-[2rem] bg-white/5 border border-white/10 text-center">
@@ -267,7 +267,7 @@ const LandingPage: React.FC = () => {
               </div>
               <h3 className="text-2xl font-black text-white">Celebrate Success</h3>
               <p className="text-purple-200 font-medium leading-relaxed">
-                Join the DNSC Institute of Computing in celebrating the spirit of innovation and institutional excellence.
+                Join the DNSC Institute in celebrating the spirit of innovation and institutional excellence.
               </p>
             </motion.div>
 
@@ -312,7 +312,7 @@ const LandingPage: React.FC = () => {
           
           <h2 className="text-4xl md:text-6xl font-black text-white tracking-tight">Ready to see the <br /> accomplishments?</h2>
           <p className="text-purple-100 text-lg font-medium opacity-80 max-w-xl mx-auto">
-            Take a look at the documented success stories of the Institute of Computing's brightest students.
+            Take a look at the documented success stories of the Institute's brightest students.
           </p>
           <Link 
             to="/awards"
@@ -354,8 +354,8 @@ const LandingPage: React.FC = () => {
                     <Award size={20} />
                   </div>
                   <div className="text-center md:text-left">
-                    <span className="font-black text-white text-2xl md:text-3xl tracking-tighter block leading-none">Institute of Computing</span>
-                    <span className="text-[10px] md:text-xs font-black text-purple-300 uppercase tracking-[0.3em] block mt-2">Awards Online Platform</span>
+                    <span className="font-black text-white text-2xl md:text-3xl tracking-tighter block leading-none">Institute Awards</span>
+                    <span className="text-[10px] md:text-xs font-black text-purple-300 uppercase tracking-[0.3em] block mt-2">Online Platform</span>
                   </div>
                 </div>
               </div>
@@ -366,7 +366,7 @@ const LandingPage: React.FC = () => {
           </div>
           <div className="flex flex-col items-center md:items-end gap-2 text-center md:text-right">
             <p className="text-white text-xs md:text-sm font-black uppercase tracking-widest">
-              © {new Date().getFullYear()} Institute of Computing Awards Online Platform
+              © {new Date().getFullYear()} Institute Awards Online Platform
             </p>
             <p className="text-purple-300 text-xs font-medium">
               Designed for Higher Education Recognition
