@@ -1,32 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { Award, Users, Clock, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
 import { adminApi } from '../../lib/api';
 import Skeleton from '../../components/Skeleton';
 
 const Dashboard: React.FC = () => {
-  const [stats, setStats] = useState({
+  const { data: stats = {
     totalAwards: 0,
     approvedAdmins: 0,
     pendingRequests: 0,
     recentAwards: [] as any[],
-  });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
-    try {
+  }, isLoading: loading } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: async () => {
       const { data } = await adminApi.getStats();
-      setStats(data);
-    } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
-    } finally {
-      setLoading(false);
+      return data;
     }
-  };
+  });
 
   const cards = [
     { label: 'Total Awards', value: stats.totalAwards, icon: Award, color: 'bg-blue-500' },

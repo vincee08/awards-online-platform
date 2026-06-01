@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import imageCompression from 'browser-image-compression';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -45,6 +46,7 @@ const AwardForm: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [additionalImages, setAdditionalImages] = useState<string[]>([]);
@@ -108,7 +110,15 @@ const AwardForm: React.FC = () => {
       if (!file) return;
 
       setUploading(true);
-      const { data: { publicUrl } } = await adminApi.uploadImage(file);
+      
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+      const compressedFile = await imageCompression(file, options);
+
+      const { data: { publicUrl } } = await adminApi.uploadImage(compressedFile);
 
       if (isMain) {
         setValue('image_url', publicUrl);
@@ -129,7 +139,7 @@ const AwardForm: React.FC = () => {
 
   const onSubmit = async (data: AwardFormData) => {
     try {
-      setLoading(true);
+      setIsSaving(true);
       
       const payload = {
         ...data,
@@ -152,7 +162,7 @@ const AwardForm: React.FC = () => {
         type: 'error' 
       });
     } finally {
-      setLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -217,6 +227,27 @@ const AwardForm: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      <AnimatePresence>
+        {(isSaving || uploading) && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/20 backdrop-blur-sm pointer-events-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white p-8 rounded-[2rem] shadow-2xl flex flex-col items-center gap-4 text-center"
+            >
+              <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+              <div>
+                <h3 className="text-lg font-black text-slate-900">
+                  {uploading ? 'Uploading Image...' : 'Saving Award...'}
+                </h3>
+                <p className="text-slate-500 font-medium text-sm">Please wait a moment.</p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -244,7 +275,7 @@ const AwardForm: React.FC = () => {
           </button>
           <button
             onClick={handleSubmit(onSubmit)}
-            disabled={loading || uploading}
+            disabled={loading || isSaving || uploading}
             className="flex items-center gap-2 px-8 py-3 bg-primary text-white rounded-2xl hover:bg-primary-dark disabled:opacity-50 transition-all shadow-xl shadow-primary/20 font-bold"
           >
             <Save size={20} />
@@ -368,69 +399,19 @@ const AwardForm: React.FC = () => {
                 placeholder="https://facebook.com/posts/..."
                 className="w-full px-5 py-4 bg-slate-50 rounded-2xl border-none outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-slate-700"
               />
+              <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3 mt-4">
+                <Info className="text-amber-500 shrink-0" size={18} />
+                <p className="text-[10px] text-amber-700 font-bold leading-relaxed">
+                  Tip: Facebook links often block images. If the link doesn't show a preview above, please download and upload the file instead.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Sidebar */}
         <div className="space-y-8">
-          {/* Main Media */}
-          <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">
-            <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Main Award Media</h4>
-            
-            <div className="relative group aspect-square rounded-[2rem] overflow-hidden bg-slate-50 border-2 border-dashed border-slate-200 hover:border-primary/50 transition-all">
-              {previewUrl || currentImageUrl ? (
-                <>
-                  <img src={previewUrl || currentImageUrl} alt="Preview" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <label className="p-3 bg-white rounded-xl text-slate-900 cursor-pointer hover:scale-110 transition-transform">
-                      <Upload size={20} />
-                      <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
-                    </label>
-                    <button 
-                      onClick={() => { setPreviewUrl(null); setValue('image_url', ''); }}
-                      className="p-3 bg-red-500 rounded-xl text-white hover:scale-110 transition-transform"
-                    >
-                      <X size={20} />
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <label className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100/50 transition-colors">
-                  <div className="p-4 bg-primary/5 text-primary rounded-2xl mb-3">
-                    <Upload size={32} />
-                  </div>
-                  <span className="text-sm font-black text-slate-900">Upload Featured Photo</span>
-                  <p className="text-[10px] text-slate-400 font-bold mt-1">PNG, JPG up to 10MB</p>
-                  <input type="file" className="hidden" accept="image/*" onChange={handleFileUpload} />
-                </label>
-              )}
-            </div>
 
-            <div className="space-y-3">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                <LinkIcon size={12} />
-                Or Paste Image Link
-              </label>
-              <input
-                type="url"
-                {...register('image_url')}
-                placeholder="https://example.com/photo.jpg"
-                className="w-full px-4 py-3 bg-slate-50 rounded-xl border-none outline-none focus:ring-4 focus:ring-primary/10 transition-all font-bold text-slate-600 text-xs"
-                onChange={(e) => {
-                  register('image_url').onChange(e);
-                  setPreviewUrl(e.target.value);
-                }}
-              />
-            </div>
-
-            <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3">
-              <Info className="text-amber-500 shrink-0" size={18} />
-              <p className="text-[10px] text-amber-700 font-bold leading-relaxed">
-                Tip: Facebook links often block images. If the link doesn't show a preview above, please download and upload the file instead.
-              </p>
-            </div>
-          </div>
 
           {/* Additional Gallery */}
           <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm space-y-6">

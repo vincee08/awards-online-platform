@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Plus, 
   Search, 
@@ -23,8 +24,21 @@ type AdminProfile = Database['public']['Tables']['admin_users']['Row'];
 
 const AwardsManagement: React.FC = () => {
   const { profile } = useOutletContext<{ profile: AdminProfile }>();
-  const [awards, setAwards] = useState<Award[]>([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  
+  const { data: awards = [], isLoading: loading } = useQuery({
+    queryKey: ['awards'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('awards')
+        .select('*')
+        .order('date_awarded', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
   const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,27 +51,6 @@ const AwardsManagement: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [notification]);
-
-  useEffect(() => {
-    fetchAwards();
-  }, []);
-
-  const fetchAwards = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('awards')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setAwards(data || []);
-    } catch (error) {
-      console.error('Error fetching awards:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleDelete = (id: string) => {
     setAwardToArchive(id);
@@ -73,7 +66,9 @@ const AwardsManagement: React.FC = () => {
       await adminApi.archiveAward(awardToArchive);
 
       // Update local state to remove it from view
-      setAwards(awards.filter(a => a.id !== awardToArchive));
+      queryClient.setQueryData(['awards'], (old: Award[] | undefined) => 
+        old ? old.filter(a => a.id !== awardToArchive) : []
+      );
       setNotification({ message: 'Award archived and hidden successfully', type: 'success' });
     } catch (error: any) {
       setNotification({ message: error.message || 'Error archiving award', type: 'error' });
